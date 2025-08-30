@@ -32,20 +32,32 @@
             padding: 8px;
             width: 90%;
             margin: 10px 0;
-
         }
 
         button {
             padding: 8px 15px;
-            background: #007bff;
             border: none;
-            color: white;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        button:hover {
+        #btnBuscar {
+            background: #007bff;
+            color: white;
+        }
+
+        #btnBuscar:hover {
             background: #0056b3;
+        }
+
+        #btnLimpiar {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        #btnLimpiar:hover {
+            background: #5a6268;
         }
 
         .table-container {
@@ -72,7 +84,7 @@
         </h2>
         <input type="text" id="ci" placeholder="Ingresa tu CI" class="form-control">
         <br>
-        <button class="btn btn-primary w-50" onclick="consultarNota()">Buscar</button>
+        <button id="btnBuscar" class="w-40" onclick="consultarNota()">Buscar</button>
         <button id="btnLimpiar" class="w-40" onclick="limpiarConsulta()">Limpiar</button>
 
         <div id="resultado" class="table-container"></div>
@@ -102,8 +114,8 @@
                 // Filtramos filas vacías
                 datos = datos.filter(row => row.CI && row.Nombre);
 
-                // Buscamos todas las filas con ese CI
-                let estudiantes = datos.filter(row => row.CI === ciIngresado);
+                // Convertimos CI a string para asegurar coincidencia
+                let estudiantes = datos.filter(row => String(row.CI).trim() === ciIngresado);
 
                 if (estudiantes.length > 0) {
                     resultado.innerHTML = "";
@@ -126,20 +138,21 @@
 
                     // Cuerpo dinámico
                     let tbody = document.createElement("tbody");
+
                     estudiantes.forEach(est => {
                         let filaBody = document.createElement("tr");
-                        claves.forEach(key => {
+                        claves.forEach((key, index) => {
                             let td = document.createElement("td");
                             td.textContent = est[key];
 
-                            // Coloreamos automáticamente si la columna es Nota
-                            if (key.toLowerCase().includes("nota")) {
+                            // Coloreamos solo la última columna
+                            if (index === claves.length - 1) {
                                 let valor = parseFloat(est[key]);
                                 if (!isNaN(valor)) {
-                                    if (valor >= 80) td.classList.add("table-success");          // verde
-                                    else if (valor >= 66) td.classList.add("table-lechuga");      // verde lechuga
-                                    else if (valor >= 51) td.classList.add("table-warning");      // amarillo
-                                    else td.classList.add("table-danger");                        // rojo
+                                    if (valor >= 80) td.classList.add("table-success");
+                                    else if (valor >= 66) td.classList.add("table-lechuga");
+                                    else if (valor >= 51) td.classList.add("table-warning");
+                                    else td.classList.add("table-danger");
                                 }
                             }
 
@@ -158,10 +171,11 @@
                 resultado.innerHTML = `<div class="alert alert-warning">⚠️ Error al consultar datos</div>`;
             }
         }
+
         function limpiarConsulta() {
             document.getElementById("ci").value = "";
             document.getElementById("resultado").innerHTML = "";
-            document.getElementById("resumen").innerHTML = "";
+            document.getElementById("ci").focus();
         }
     </script>
 </body>
